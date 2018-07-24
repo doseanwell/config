@@ -7,14 +7,10 @@
 *
 * 版本：V0.0.1：由sean创建
 ***************************************************************/
-#include "ui.h"
-#include "bl.h"
-#include "persist.h"
+#include "option.h"
 
+#define MAIN_CONFIG_DIR "./main.conf"
 typedef struct {
-    pthread_mutex_t lock; /* 互斥体lock 用于对缓冲区的互斥操作 */
-    pthread_cond_t not_true; /* 缓冲区非空的条件变量 */
-
     uint8_t gpstest_flag;//测试总标志
     uint8_t gga_flag;//gga测试标志
     uint8_t workmode_flag;//gga测试标志
@@ -37,10 +33,10 @@ static void main_opt_init()
 
     load_opts(MAIN_CONFIG_DIR, &opt_lq_main_base);//更新配置文件的数据到内存
 
-    DEBUG_INFO("main-gpstest is : %d\n", main_opt.gpstest_flag);
-    DEBUG_INFO("main-gga is : %d\n", main_opt.gga_flag);
-    DEBUG_INFO("main-workmode is : %d\n", main_opt.workmode_flag);
-    DEBUG_INFO("main-nettest is : %d\n", main_opt.nettest_flag);
+    printf("main-gpstest is : %d\n", main_opt.gpstest_flag);
+    printf("main-gga is : %d\n", main_opt.gga_flag);
+    printf("main-workmode is : %d\n", main_opt.workmode_flag);
+    printf("main-nettest is : %d\n", main_opt.nettest_flag);
 
     save_opt(MAIN_CONFIG_DIR, &opt_lq_main_base, "Qbox10 main config");
 }
@@ -55,9 +51,9 @@ static void main_opt_init()
  ******************************************************************************/
 int main(int argc, char *argv[])
 {
-
+    main_opt_init();
     while(1) {
-        qbox_delay_us(1000000);
+        usleep(1000000);
     }
 }
 

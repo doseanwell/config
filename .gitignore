@@ -50,4 +50,12 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+.vscode
+Makefile
 *~
+CMakeFiles
+CMakeCache.*
+cmake_install.*
+*.conf
+test_option

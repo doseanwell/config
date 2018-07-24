@@ -9,8 +9,6 @@
 * 版本：V1.0.0：由sean创建
 ***************************************************************/
 #include "option.h"
-#include "shm.h"
-
 
 opt_lq_type opt_lq_info_base, *opt_lq_info_node;
 
@@ -182,9 +180,9 @@ int creat_opts(const char *file)
     FILE *fp;
     char buff[2048];
     if (!access(file, 0)) {
-        DEBUG_INFO("The %s file exist\n", file);
+        printf("The %s file exist\n", file);
         if (!(fp = fopen(file,"r"))) {
-                DEBUG_ERROR("%s is none\n",file);
+                printf("%s is none\n",file);
                 return -1;
         }
         if (fgets(buff,sizeof(buff),fp)) {//做个保护,说明有数据，直接返回
@@ -194,11 +192,11 @@ int creat_opts(const char *file)
     }
 
     if (!(fp = fopen(file,"w+"))) {
-        DEBUG_ERROR("%s is none\n",file);
+        printf("%s is none\n",file);
         return -1;
     }
 
-    DEBUG_INFO("%s creat success!\n",file);
+    printf("%s creat success!\n",file);
 
     fclose(fp);
     sync();//确保及时写入磁盘
@@ -215,18 +213,18 @@ opt_lq_type *load_opts(const char *file, opt_lq_type *opt_lq)
     int n=0;
 
     if(creat_opts(file) < 0) {//先确保文件存在
-        DEBUG_ERROR("%s is error\n",file);
+        printf("%s is error\n",file);
         return NULL;
     }
     node = start;
 
     if (!(fp=fopen(file,"r"))) {
-        DEBUG_ERROR("%s is none\n",file);
+        printf("%s is none\n",file);
         return NULL;
     }
 
     while (fgets(buff,sizeof(buff),fp)) {
-//      DEBUG_INFO("buff=%s\n",buff);
+//      printf("buff=%s\n",buff);
         n++;
         chop(buff);
 
@@ -238,9 +236,9 @@ opt_lq_type *load_opts(const char *file, opt_lq_type *opt_lq)
         }
         *p++='\0';
         chop(buff);
-//      DEBUG_INFO("buff=%s\n",buff);
+//      printf("buff=%s\n",buff);
         if (!(opt=search_opt(buff,start))) continue;
-//      DEBUG_INFO("p=%s\n",p);
+//      printf("p=%s\n",p);
         if (!str_2_opt(opt,p)) {
             fprintf(stderr,"invalid option value %s (%s:%d)\n",buff,file,n);
             continue;
@@ -258,15 +256,15 @@ static int save_opts(opt_lq_type *opt_lq, const char *file, const char *mode, co
     FILE *fp;
     char buff[2048];
     int i;
-//  DEBUG_INFO("Save opt!comment is:%s\r\n", comment);
+//  printf("Save opt!comment is:%s\r\n", comment);
 
     if(start->opt.var == NULL) {
-        DEBUG_ERROR("Sys opts is NULL");
+        printf("Sys opts is NULL");
         return -1;
     }
 
     if (!(fp = fopen(file, mode))) {
-        DEBUG_ERROR("%s file open failed  or file opening", file);
+        printf("%s file open failed  or file opening", file);
         return -1;
     }
     if (comment) {
@@ -299,7 +297,7 @@ opt_info_type *get_sysopts()
     }
     else
     {
-        DEBUG_ERROR("opt_info is NULL\r\n");
+        printf("opt_info is NULL\r\n");
         exit(1);
     }
 }
@@ -394,15 +392,15 @@ opt_info_type *system_conf_init(const char *file)
 int save_system_opt()
 {
     int32_t ret = 0;
-    pthread_mutex_lock(&opt_info->lock);
-    ret = save_opts(&opt_lq_info_base, SYSTEM_CONFIG_DIR, "w", HEADER_COMMENT);//保存修改后的系统配置到文件
-    pthread_mutex_unlock(&opt_info->lock);
+    // pthread_mutex_lock(&opt_info->lock);
+    // ret = save_opts(&opt_lq_info_base, SYSTEM_CONFIG_DIR, "w", HEADER_COMMENT);//保存修改后的系统配置到文件
+    // pthread_mutex_unlock(&opt_info->lock);
     return ret;
 }
 
 void opts_write(uint32_t opt_type, void *val)
 {
-    pthread_mutex_lock(&opt_info->lock);
+    // pthread_mutex_lock(&opt_info->lock);
     switch (opt_type) {
         /*******下面时sta类型配置*********/
         case OPT_STA_FLAG:
@@ -516,6 +514,6 @@ void opts_write(uint32_t opt_type, void *val)
             opt_info->sys.connect_type = *(uint32_t *)val;
             break;
     }
-    pthread_mutex_unlock(&opt_info->lock);
+    // pthread_mutex_unlock(&opt_info->lock);
 }
 

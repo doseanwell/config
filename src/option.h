@@ -11,7 +11,7 @@
 #define __OPTION__
 
 #include <stdio.h>
-#include "persist_common.h"
+#include <stdint.h>
 
 #define SYSTEM_VERSION  "1.0.0"
 #define HEADER_COMMENT "ZHD MTXY SYSTEM CONFIG FILE"
@@ -21,6 +21,8 @@
 #define FORMAT_STRING       2
 #define FORMAT_ENUM         3
 
+#define myfree(p)   free(p); \
+                    p = NULL
 typedef struct {        /* option type */
     char *name;         /* option name */
     int format;         /* option format (0:int,1:double,2:string,3:enum) */
@@ -158,9 +160,6 @@ typedef struct {            /* option core type */
 } opt_sys;
 
 typedef struct {
-    pthread_mutex_t lock; /* 互斥体lock 用于对缓冲区的互斥操作 */
-    pthread_cond_t not_true; /* 缓冲区非空的条件变量 */
-//  opt_login   login_opt;
     opt_sta     sta;
     opt_sys     sys;
 } opt_info_type;
